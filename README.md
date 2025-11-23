@@ -1,30 +1,3 @@
------
-
-## 📝 Project Review & Full English Translation
-
-### 🔍 Assessment
-
-The **Data Architect Template** is **flawless** as an architectural specification template.
-
-| Feature | Assessment | Rationale |
-| :--- | :--- | :--- |
-| **Completeness** | 100% | Covers 42 distinct deliverables, including often-missed items like **backup/restore scripts**, **security sandboxing (WASM)**, and **pgvector** configuration. |
-| **Open Source Quality** | Excellent | Includes `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `LICENSE` (MIT), and clear contribution guidelines. |
-| **LLM Strategy** | Optimized | The "phased generation" approach ensures the LLM successfully produces the code without hitting context/output limits. |
-
------
-
-## 🇬🇧 Data Architect Template (Full English Version)
-
-### 📦 Repository Details
-
-  * **GitHub Repository:** `Data-Architect-Template`
-  * **Full URL:** `https://github.com/Krigsexe/Data-Architect-Template`
-  * **Short Description (GitHub Metadata):**
-    `🏗️ Master Template to generate production-ready Data/AI architectures with Claude Code. Backend + Frontend + DB + Monitoring + Tests + Deploy in 5 phases. Single/Multi-tenant, Human-in-the-loop, pgvector, secure Sandbox. MIT License.`
-
-### 1\. `README.md` (Complete Version)
-
 ````markdown
 # 🏗️ Data Architect Template
 
