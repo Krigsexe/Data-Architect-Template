@@ -5,7 +5,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Made with ❤️ by Krigs](https://img.shields.io/badge/Made%20with%20%E2%9D%A4%EF%B8%8F%20by-Krigs-red)](https://github.com/Krigsexe)
-![Banner](assets/banner.png)
 
 ---
 
