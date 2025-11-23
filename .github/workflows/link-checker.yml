@@ -1,0 +1,81 @@
+name: Check Links
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run weekly on Monday at 9:00 UTC
+    - cron: '0 9 * * 1'
+
+jobs:
+  link-checker:
+    name: Check Markdown Links
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Check internal links
+        run: |
+          echo "Checking internal links..."
+          
+          # Find all markdown files
+          markdown_files=$(find . -name '*.md' -not -path './node_modules/*')
+          
+          errors=0
+          
+          for file in $markdown_files; do
+            echo "Checking: $file"
+            
+            # Extract internal links (relative paths)
+            links=$(grep -oP '\]\(\K[^)#]+(?=[)#]|$)' "$file" | grep -v '^http' || true)
+            
+            for link in $links; do
+              # Remove anchor if present
+              link_path=$(echo "$link" | cut -d'#' -f1)
+              
+              # Skip empty links
+              if [ -z "$link_path" ]; then
+                continue
+              fi
+              
+              # Resolve relative path
+              dir=$(dirname "$file")
+              full_path="$dir/$link_path"
+              
+              # Normalize path
+              full_path=$(realpath -m "$full_path" 2>/dev/null || echo "$full_path")
+              
+              # Check if file exists
+              if [ ! -f "$full_path" ] && [ ! -d "$full_path" ]; then
+                echo "❌ Broken link in $file: $link"
+                errors=$((errors + 1))
+              fi
+            done
+          done
+          
+          if [ $errors -gt 0 ]; then
+            echo ""
+            echo "Found $errors broken internal link(s)"
+            exit 1
+          else
+            echo "✅ All internal links valid"
+          fi
+      
+      - name: Check external links
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: |
+            --exclude-path './node_modules/**'
+            --exclude-path './.git/**'
+            --exclude 'linkedin.com'
+            --exclude 'twitter.com'
+            --exclude 'x.com'
+            --max-retries 3
+            --timeout 30
+            '**/*.md'
+          fail: true
+        continue-on-error: true

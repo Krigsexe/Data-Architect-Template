@@ -1,0 +1,134 @@
+name: Validate Template
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'templates/**'
+      - 'docs/**'
+      - 'scripts/**'
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  validate-placeholders:
+    name: Validate Placeholders
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Check placeholder format
+        run: |
+          echo "Checking for invalid placeholder formats..."
+          
+          # Check for lowercase placeholders (should be uppercase)
+          if grep -rn '\[\w*[a-z]\w*\]' templates/ --include='*.md' | grep -v '\[translate:'; then
+            echo "Error: Found lowercase placeholders. Use [UPPERCASE_FORMAT] instead."
+            exit 1
+          fi
+          
+          # Check for spaces in placeholders
+          if grep -rn '\[\w* \w*\]' templates/ --include='*.md'; then
+            echo "Error: Found spaces in placeholders. Use underscores instead."
+            exit 1
+          fi
+          
+          echo "✅ All placeholders follow correct format"
+      
+      - name: Check for TODO comments
+        run: |
+          echo "Checking for TODO comments in templates..."
+          
+          if grep -rn 'TODO\|FIXME\|XXX' templates/ --include='*.md'; then
+            echo "Warning: Found TODO/FIXME comments. Please resolve before merging."
+            # Don't fail, just warn
+          else
+            echo "✅ No TODO comments found"
+          fi
+      
+      - name: Validate Markdown syntax
+        uses: DavidAnson/markdownlint-cli2-action@v14
+        with:
+          globs: |
+            templates/**/*.md
+            docs/**/*.md
+          config: '.markdownlint.json'
+        continue-on-error: true
+  
+  check-documentation:
+    name: Check Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Check required files
+        run: |
+          echo "Checking for required documentation files..."
+          
+          required_files=(
+            "README.md"
+            "LICENSE"
+            "CONTRIBUTING.md"
+            "CODE_OF_CONDUCT.md"
+            "templates/master-template.md"
+            "templates/placeholders-reference.md"
+            "docs/getting-started.md"
+            "docs/architecture.md"
+          )
+          
+          missing_files=()
+          
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ Missing: $file"
+              missing_files+=("$file")
+            else
+              echo "✅ Found: $file"
+            fi
+          done
+          
+          if [ ${#missing_files[@]} -ne 0 ]; then
+            echo ""
+            echo "Error: Missing required files"
+            exit 1
+          fi
+          
+          echo "✅ All required files present"
+  
+  check-examples:
+    name: Validate Examples
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Check example consistency
+        run: |
+          echo "Checking example files for consistency..."
+          
+          for example in docs/examples/*.md; do
+            if [ -f "$example" ]; then
+              echo "Validating: $example"
+              
+              # Check if examples use proper placeholder format
+              if grep -n '\[\w*[a-z]\w*\]' "$example" | grep -v '\[translate:'; then
+                echo "Warning: $example contains lowercase placeholders"
+              fi
+              
+              # Check if examples have required sections
+              if ! grep -q '## Description' "$example"; then
+                echo "Warning: $example missing Description section"
+              fi
+              
+              if ! grep -q '## Tech Stack' "$example"; then
+                echo "Warning: $example missing Tech Stack section"
+              fi
+            fi
+          done
+          
+          echo "✅ Example validation complete"
