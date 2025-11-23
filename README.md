@@ -452,7 +452,7 @@ If you contribute regularly and with quality, we may offer you the role of maint
 ## Questions?
 
   - 💬 [GitHub Discussions](https://www.google.com/search?q=https://github.com/Krigsexe/Data-Architect-Template/discussions)
-  - 📧 Email: [contact@proxitek.fr](mailto:contact@proxitek.fr)
+  - 📧 Email: [contact@proxitek.fr](mailto:contact@solvin.ch)
 
 ### Networks
 
