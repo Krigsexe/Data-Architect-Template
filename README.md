@@ -1,4 +1,3 @@
-````markdown
 # 🏗️ Data Architect Template
 
 > The ultimate template to generate production-ready Data/AI architectures with Claude Code or any capable LLM code generation model.
